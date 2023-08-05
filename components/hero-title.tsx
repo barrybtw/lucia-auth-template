@@ -15,7 +15,7 @@ export default function HeroTitle({
   const { scrollYProgress } = useScroll();
   const marginLeft = useTransform(scrollYProgress, [0, 1], ['5%', '35%']);
   return (
-    <motion.h1
+    <h1
       className={cn(
         bodoni_moda.className,
         'break-all text-5xl sm:text-7xl lg:text-9xl w-full leading-[1.15] md:leading-[1.25] lg:leading-[1.35] uppercase',
@@ -23,6 +23,6 @@ export default function HeroTitle({
     >
       <motion.span style={{ marginLeft }}>J</motion.span>
       ust simple and elegant authentication in your hands
-    </motion.h1>
+    </h1>
   );
 }
