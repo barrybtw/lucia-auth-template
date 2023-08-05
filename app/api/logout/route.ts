@@ -1,6 +1,4 @@
-import { type NextApiRequest } from 'next';
-
-export const GET = async (_req: NextApiRequest) => {
+export const GET = async (_req: Request) => {
   return new Response(null, {
     status: 302,
     headers: {

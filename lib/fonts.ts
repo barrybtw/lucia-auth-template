@@ -4,6 +4,7 @@ export const bodoni_moda = Bodoni_Moda({
   subsets: ['latin'],
   display: 'swap',
   fallback: ['serif'],
+  adjustFontFallback: true,
 });
 
 export const inter = Inter({
