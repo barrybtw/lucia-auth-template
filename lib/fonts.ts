@@ -1,4 +1,11 @@
-import { Bodoni_Moda, Inter } from 'next/font/google';
+import {
+  Bodoni_Moda,
+  Handlee,
+  Indie_Flower,
+  Inter,
+  Marck_Script,
+  Sacramento,
+} from 'next/font/google';
 
 export const bodoni_moda = Bodoni_Moda({
   subsets: ['latin'],

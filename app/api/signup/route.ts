@@ -1,7 +1,7 @@
 import { auth } from '@/lib/lucia';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { LuciaError } from 'lucia';
+import { PrismaClientValidationError } from '@prisma/client/runtime/library';
 
 import type { NextRequest } from 'next/server';
 
@@ -12,7 +12,7 @@ export const POST = async (request: NextRequest) => {
   // basic check
   if (
     typeof username !== 'string' ||
-    username.length < 1 ||
+    username.length < 4 ||
     username.length > 31
   ) {
     return NextResponse.json(
@@ -26,7 +26,7 @@ export const POST = async (request: NextRequest) => {
   }
   if (
     typeof password !== 'string' ||
-    password.length < 1 ||
+    password.length < 6 ||
     password.length > 255
   ) {
     return NextResponse.json(
@@ -39,11 +39,18 @@ export const POST = async (request: NextRequest) => {
     );
   }
   try {
-    // find user by key
-    // and validate password
-    const key = await auth.useKey('username', username.toLowerCase(), password);
+    const user = await auth.createUser({
+      key: {
+        providerId: 'username', // auth method
+        providerUserId: username.toLowerCase(), // unique id when using "username" auth method
+        password, // hashed by Lucia
+      },
+      attributes: {
+        username,
+      },
+    });
     const session = await auth.createSession({
-      userId: key.userId,
+      userId: user.userId,
       attributes: {},
     });
     const authRequest = auth.handleRequest({
@@ -58,22 +65,17 @@ export const POST = async (request: NextRequest) => {
       },
     });
   } catch (e) {
-    if (
-      e instanceof LuciaError &&
-      (e.message === 'AUTH_INVALID_KEY_ID' ||
-        e.message === 'AUTH_INVALID_PASSWORD')
-    ) {
-      // user does not exist
-      // or invalid password
+    if (e instanceof PrismaClientValidationError && e.message === 'P2002') {
       return NextResponse.json(
         {
-          error: 'Incorrect username or password',
+          error: 'Username already taken',
         },
         {
           status: 400,
         },
       );
     }
+
     return NextResponse.json(
       {
         error: 'An unknown error occurred',
